@@ -1,0 +1,46 @@
+{
+  "name": "ngx-vueuse",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build vueuse-lib",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test vueuse-lib --watch false",
+    "lint": "eslint --fix ./projects && prettier ./projects --write"
+  },
+  "private": true,
+  "packageManager": "npm@11.12.1",
+  "dependencies": {
+    "@angular/common": "^22.0.4",
+    "@angular/compiler": "^22.0.4",
+    "@angular/core": "^22.0.4",
+    "@angular/forms": "^22.0.4",
+    "@angular/platform-browser": "^22.0.4",
+    "@angular/platform-browser-dynamic": "^22.0.4",
+    "@angular/router": "^22.0.4",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.0.5",
+    "@angular/cli": "^22.0.5",
+    "@angular/compiler-cli": "^22.0.4",
+    "@types/jsdom": "^28.0.3",
+    "@vitest/browser-playwright": "^4.1.9",
+    "@vitest/coverage-v8": "^4.1.9",
+    "@vitest/ui": "^4.1.9",
+    "happy-dom": "^20.10.6",
+    "jsdom": "^28.0.0",
+    "msw": "^2.14.6",
+    "ng-packagr": "^22.0.1",
+    "prettier": "^3.8.1",
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.8",
+    "vitest-browser-vue": "^2.1.0",
+    "@eslint/js": "^9.32.0",
+    "eslint": "^9.32.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "typescript-eslint": "^8.19.1"
+  }
+}

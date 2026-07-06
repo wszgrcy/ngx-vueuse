@@ -1,0 +1,105 @@
+/**
+ * Reactive screen orientation for Angular
+ *
+ * Ported from VueUse useScreenOrientation
+ * @see https://vueuse.org/useScreenOrientation
+ */
+
+import type { Signal } from '@angular/core';
+import { signal } from '@angular/core';
+import type { ConfigurableWindow } from '../_configurable';
+import type { Supportable } from '../types';
+import { defaultWindow } from '../_configurable';
+import { useEventListener } from '../useEventListener';
+import { useSupported } from '../useSupported';
+
+// TypeScript dropped the inline types for these types in 5.2
+// We vendor them here to avoid the dependency
+
+export type OrientationType =
+  | 'portrait-primary'
+  | 'portrait-secondary'
+  | 'landscape-primary'
+  | 'landscape-secondary';
+export type OrientationLockType =
+  | 'any'
+  | 'natural'
+  | 'landscape'
+  | 'portrait'
+  | 'portrait-primary'
+  | 'portrait-secondary'
+  | 'landscape-primary'
+  | 'landscape-secondary';
+
+export interface ScreenOrientation extends EventTarget {
+  lock: (orientation: OrientationLockType) => Promise<void>;
+  unlock: () => void;
+  readonly type: OrientationType;
+  readonly angle: number;
+  addEventListener: (
+    type: 'change',
+    listener: (this: this, ev: Event) => any,
+    useCapture?: boolean,
+  ) => void;
+}
+export interface UseScreenOrientationOptions extends ConfigurableWindow {}
+
+export interface UseScreenOrientationReturn extends Supportable {
+  orientation: Signal<OrientationType | undefined>;
+  angle: Signal<number>;
+  lockOrientation: (type: OrientationLockType) => Promise<void>;
+  unlockOrientation: () => void;
+}
+
+/**
+ * Reactive screen orientation
+ *
+ * @see https://vueuse.org/useScreenOrientation
+ *
+ * @__NO_SIDE_EFFECTS__
+ */
+export function useScreenOrientation(
+  options: UseScreenOrientationOptions = {},
+): UseScreenOrientationReturn {
+  const { window = defaultWindow } = options;
+
+  const isSupported = useSupported(
+    () => window && 'screen' in window && 'orientation' in window.screen,
+  );
+
+  const screenOrientation = (isSupported() ? window!.screen.orientation : {}) as ScreenOrientation;
+
+  const orientation = signal<OrientationType | undefined>(screenOrientation.type);
+  const angle = signal(screenOrientation.angle || 0);
+
+  if (isSupported()) {
+    useEventListener(
+      window,
+      'orientationchange',
+      () => {
+        orientation.set(screenOrientation.type);
+        angle.set(screenOrientation.angle);
+      },
+      { passive: true },
+    );
+  }
+
+  const lockOrientation = (type: OrientationLockType) => {
+    if (isSupported() && typeof screenOrientation.lock === 'function')
+      return screenOrientation.lock(type);
+
+    return Promise.reject(new Error('Not supported'));
+  };
+
+  const unlockOrientation = () => {
+    if (isSupported() && typeof screenOrientation.unlock === 'function') screenOrientation.unlock();
+  };
+
+  return {
+    isSupported,
+    orientation,
+    angle,
+    lockOrientation,
+    unlockOrientation,
+  };
+}
